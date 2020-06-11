@@ -4,7 +4,10 @@ package poppler
 // #include <poppler.h>
 // #include <glib.h>
 import "C"
-import "unsafe"
+import (
+	"github.com/gotk3/gotk3/cairo"
+	"unsafe"
+)
 
 //import "fmt"
 
@@ -132,4 +135,9 @@ func (p *Page) TextLayoutAndAttrs() (result []TextEl) {
 
 func (p *Page) Close() {
 	C.g_object_unref(C.gpointer(p.p))
+}
+
+func (p *Page) Render(cr *cairo.Context) {
+	C.poppler_page_render_for_printing(p.p, (*C.cairo_t)(unsafe.Pointer(cr.GetCContext())))
+	//C.poppler_page_render(p.p, cr.GetCContext())
 }
