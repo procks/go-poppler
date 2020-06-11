@@ -86,52 +86,52 @@ func (p *Page) Images() (results []Image) {
 	return
 }
 
-func (p *Page) TextLayout() (layouts []Rectangle) {
-	var rect *C.PopplerRectangle
-	var n C.guint
-	if toBool(C.poppler_page_get_text_layout(p.p, &rect, &n)) {
-		defer C.g_free((C.gpointer)(rect))
-		layouts = make([]Rectangle, int(n))
-		r := (*[1 << 30]C.PopplerRectangle)(unsafe.Pointer(rect))[:n:n]
-		for i := 0; i < int(n); i++ {
-			layouts[i] = Rectangle{
-				X1: float64(r[i].x1),
-				Y1: float64(r[i].y1),
-				X2: float64(r[i].x2),
-				Y2: float64(r[i].y2),
-			}
-		}
-	}
-	return
-}
-
-func (p *Page) TextLayoutAndAttrs() (result []TextEl) {
-	text := p.Text()
-	attrs := p.TextAttributes()
-	layout := p.TextLayout()
-	result = make([]TextEl, len(layout))
-	attrsRef := make([]*TextAttributes, len(attrs))
-	for i, a := range attrs {
-		attr := a
-		attrsRef[i] = &attr
-	}
-	i := 0
-	for _, t := range text {
-		var a *TextAttributes
-		for _, a = range attrsRef {
-			if i >= a.StartIndex && i <= a.EndIndex {
-				break
-			}
-		}
-		result[i] = TextEl{
-			Text:  string(t),
-			Attrs: a,
-			Rect:  layout[i],
-		}
-		i++
-	}
-	return
-}
+//func (p *Page) TextLayout() (layouts []Rectangle) {
+//	var rect *C.PopplerRectangle
+//	var n C.guint
+//	if toBool(C.poppler_page_get_text_layout(p.p, &rect, &n)) {
+//		defer C.g_free((C.gpointer)(rect))
+//		layouts = make([]Rectangle, int(n))
+//		r := (*[1 << 30]C.PopplerRectangle)(unsafe.Pointer(rect))[:n:n]
+//		for i := 0; i < int(n); i++ {
+//			layouts[i] = Rectangle{
+//				X1: float64(r[i].x1),
+//				Y1: float64(r[i].y1),
+//				X2: float64(r[i].x2),
+//				Y2: float64(r[i].y2),
+//			}
+//		}
+//	}
+//	return
+//}
+//
+//func (p *Page) TextLayoutAndAttrs() (result []TextEl) {
+//	text := p.Text()
+//	attrs := p.TextAttributes()
+//	layout := p.TextLayout()
+//	result = make([]TextEl, len(layout))
+//	attrsRef := make([]*TextAttributes, len(attrs))
+//	for i, a := range attrs {
+//		attr := a
+//		attrsRef[i] = &attr
+//	}
+//	i := 0
+//	for _, t := range text {
+//		var a *TextAttributes
+//		for _, a = range attrsRef {
+//			if i >= a.StartIndex && i <= a.EndIndex {
+//				break
+//			}
+//		}
+//		result[i] = TextEl{
+//			Text:  string(t),
+//			Attrs: a,
+//			Rect:  layout[i],
+//		}
+//		i++
+//	}
+//	return
+//}
 
 func (p *Page) Close() {
 	C.g_object_unref(C.gpointer(p.p))
